@@ -324,8 +324,8 @@ function MainView() {
   },[jahr, gType])
   
   async function getInfo(construction_year, building_type){
-    const token = process.env.REACT_APP_API_KEY;
-    const url = process.env.REACT_APP_URL;
+    const token = "6b9179e27362b718bc8c82f451976d8c7eaa45b7";
+    const url = "https://test.energyark.advisore.eu/api/modernization-reference/";
     const headers = {
       'Content-Type': 'application/json',
       'Authorization': `Token ${token}`
@@ -386,10 +386,11 @@ function MainView() {
     if(construction_year <= 1799){
       construction_year = 1800;
     }
-    console.log(construction_year, building_type);
-   
+    
+
     getInfo(construction_year,building_type);
-    console.log(data);
+
+
     if(data!==null){
       const {references, status, statistical_consumption_data} = data;
       const {gross_energy_roomheating_values, gross_energy_waterheating_values} = statistical_consumption_data;
@@ -400,11 +401,8 @@ function MainView() {
       setKellerDesc(cellarroof[keller]?.description);
       setLüftungDesc(ventilation[lüftung]?.description);
       const roomheating = linearInterpolation(0, 0, 75, gross_energy_roomheating_values);
-      console.log("Roomheating: "+roomheating);
       const waterheating = linearInterpolation(0, 0, 75, gross_energy_waterheating_values);
-      console.log("Waterheating: "+waterheating);
       const Endenergieverbrauche = roomheating + waterheating;
-      console.log("Endenergieverbrauche: "+Endenergieverbrauche);
       setEnergy(Math.round((Endenergieverbrauche + Number.EPSILON) * 100) / 100);
       
     }
@@ -485,7 +483,7 @@ function MainView() {
               <ThemeProvider theme={theme}>
                 <Slider aria-label='Restricted fassade' color='secondary' valueLabelDisplay='auto' value={fassade} step={1} min={0} max={3} marks={marks} onChange={e=>setFassade(e.target.value)} />
               </ThemeProvider>
-              {console.log("Fassade: "+fassade)}
+              
             </div> 
             <div className='pl-10'>
               <p className='text-lg font-semibold'>{fassadeDesc}</p>
@@ -499,7 +497,7 @@ function MainView() {
               <ThemeProvider theme={theme}>
                 <Slider aria-label='Restricted fenster' color='secondary' valueLabelDisplay='auto' value={fenster} step={1} min={0} max={3} marks={marks} onChange={e=>setFenster(e.target.value)} />
               </ThemeProvider>
-              {console.log("Fenster: "+fenster)}
+              
             </div>
             <div className='pl-10'>
               <p className='text-lg font-semibold'>{fensterDesc}</p>
@@ -513,7 +511,7 @@ function MainView() {
               <ThemeProvider theme={theme}>
                 <Slider aria-label='Restricted dach' color='secondary' valueLabelDisplay='auto' value={dach} step={1} min={0} max={3} marks={marks} onChange={e=>setDach(e.target.value)}   />
               </ThemeProvider>
-              {console.log("DAch: "+dach)}
+             
             </div>
             <div className='pl-2'>
               <p className='text-lg font-semibold'>{dachDesc}</p>
@@ -527,7 +525,7 @@ function MainView() {
               <ThemeProvider theme={theme}>
                 <Slider aria-label='Restricted keller' color='secondary' valueLabelDisplay='auto' value={keller} step={1} min={0} max={3} marks={marks} onChange={e=>setKeller(e.target.value)}  />
               </ThemeProvider>
-              {console.log("Kller: "+keller)}
+             
             </div>
             <div className='pl-20'>
               <p className='text-lg font-semibold'>{kellerDesc}</p>
@@ -541,7 +539,7 @@ function MainView() {
               <ThemeProvider theme={theme}>
                 <Slider aria-label='Restricted lüftung' color='secondary' valueLabelDisplay='auto' value={lüftung} step={1} min={0} max={1} marks={marks} onChange={e=>setLüftung(e.target.value)}  />
               </ThemeProvider>
-              {console.log("luftung: "+lüftung)}
+             
             </div>
             <div className='pl-10'>
               <p className='text-lg font-semibold'>{lüftungDesc}</p>
