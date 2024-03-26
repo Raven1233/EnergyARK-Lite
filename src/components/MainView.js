@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 import { useAxios } from './useAxios';
 import { render } from '@testing-library/react';
 import html2canvas from 'html2canvas';
+import numeral from 'numeral';
 /* const res = fetch(url, {
       method: 'POST',
       headers: {
@@ -40,7 +41,10 @@ function MainView() {
   const [error, setError] = useState(null); // Error handling
   const [jahr, setJahr] = useState(''); // Baujahr
   const [gType, setGType] = useState(''); // Gebäudetyp
-  const [wGesamt, setWgesamt] = useState(''); // Wohnfläche gesamt
+  const [wGesamt, setWgesamt] = useState(0); // Wohnfläche gesamt
+  const [arbeitpreis, setArbeitpreis] = useState(10); // Arbeitpreis
+  const [emissionfactor, setEmissionfactor] = useState(200); // Emissionsfaktor
+  const [co2preis, setCo2preis] = useState(25); // CO2-Preis
   const [loading, setLoading] = useState(false); // Loading state
   const [energy, setEnergy] = useState(0); // Endenergieverbrauche
   const [fassadeDesc, setFassadeDesc] = useState(''); // Fassade description
@@ -48,6 +52,14 @@ function MainView() {
   const [dachDesc, setDachDesc] = useState(''); // Dach description
   const [kellerDesc, setKellerDesc] = useState(''); // Keller description
   const [lüftungDesc, setLüftungDesc] = useState(''); // Lüftung description
+  const [energiebedarf, setEnergiebedarf] = useState(0); // Energiebedarf
+  const [energiekosten, setEnergiekosten] = useState(0); // Energiekosten
+  const [co2kosten, setCo2kosten] = useState(0); // CO2-Kosten
+  const [spezifische, setSpezifische] = useState(0); // Spezifische Energieverbrauch
+  const [slider, enableSlider] = useState(false); // Slider state
+  const myMessage = useRef(null);
+  const [K, setK] = useState(0);
+  const ref = useRef(null);
   
 
   useEffect(() => {
@@ -76,8 +88,17 @@ function MainView() {
       const Endenergieverbrauche = roomheating + waterheating;
       setEnergy(Math.round((Endenergieverbrauche + Number.EPSILON) * 100) / 100);
       setGesamt(Math.round((((total*4)/3) + Number.EPSILON) * 100) / 100);
+      const e_bedarf = Endenergieverbrauche * wGesamt;
+      setEnergiebedarf(Math.round((e_bedarf + Number.EPSILON) * 100) / 100);
+      const e_kosten = e_bedarf * (arbeitpreis/100);
+      setEnergiekosten(Math.round((e_kosten + Number.EPSILON) * 100) / 100);
+      const co2kosten = e_bedarf * (emissionfactor/1000) * (co2preis/1000);
+      setCo2kosten(Math.round((co2kosten + Number.EPSILON) * 100) / 100);
+      const specificity = (emissionfactor/1000) * Endenergieverbrauche
+      setSpezifische(Math.round((specificity + Number.EPSILON) * 100) / 100);
     }
   },[fassade, fenster, dach, keller, lüftung])
+
 
   const destructuring = (value, index) => {
     let val = 0;
@@ -137,27 +158,46 @@ function MainView() {
         e.preventDefault();
     }
   };
+
+  const scrollToBottom = () => {
+    const {current} = ref;
+    if (current !== null){
+      current.scrollIntoView({behavior: "smooth"})
+    }
+    //window.scroll({ top: document.body.scrollHeight, behavior: 'smooth' }) 
+  };
+
+
   const successAlert = () => {
+    
     if(jahr !== '' && jahr >=1800 && gType !== '' && wGesamt !== ''){
       Swal.fire({
         title: 'Erfolg!',
         text: 'Daten wurden erfolgreich abgerufen!!',
         icon: 'success',
-        confirmButtonText: 'OK'
+        showConfirmButton: true,
+        didClose: () => scrollToBottom()
       })
     }
     else if(jahr <= 1799 ){
       Swal.fire({
-        title: 'bist du sicher?',
-        text: 'Da das Jahr vor 1800 liegt, wird die Energieklasse auf 1 gesetzt.!!',
+        title: 'Sind Sie sicher?',
+        text: 'Für das Baujahr vor 1800 ist kein Gebäudemodell in der Datenbank hinterlegt. Die Berechnungen können stattdessen mit einem Gebäudemodell Baujahr 1800+ durchgeführt. Möchten Sie dieses nutzen?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Ja, weiter!'
+        confirmButtonText: 'Ja, weiter!',
+        cancelButtonText: 'Nein, zurück!'
       }).then((result) => {
         if (result.isConfirmed) {
-          ; // Do nothing!
+          Swal.fire({
+            title: 'Erfolg!',
+            text: 'Daten wurden erfolgreich abgerufen!!',
+            icon: 'success',
+            showConfirmButton: true,
+            didClose: () => scrollToBottom()
+          })
         }
         else{
           clearInputs();
@@ -165,6 +205,7 @@ function MainView() {
       })
       
     }
+   
     
   }
 
@@ -298,6 +339,9 @@ function MainView() {
     setJahr('');
     setGType('');
     setWgesamt('');
+    setArbeitpreis(10);
+    setEmissionfactor(200);
+    setCo2preis(25);
     setFassadeDesc('');
     setDachDesc('');
     setFensterDesc('');
@@ -310,8 +354,12 @@ function MainView() {
     setLüftung(0);
     setGesamt(0);
     setEnergy(0);
+    setEnergiebedarf(0);
+    setEnergiekosten(0);
+    setCo2kosten(0);
+    setSpezifische(0);
     setData(null);
-    
+    enableSlider(false);
   }
 
   useEffect(() => {
@@ -376,17 +424,21 @@ function MainView() {
     setLüftung(0);
     setGesamt(0);
     setEnergy(0);
+    setEnergiebedarf(0);
+    setEnergiekosten(0);
+    setCo2kosten(0);
+    setSpezifische(0);
     setFassadeDesc('');
     setDachDesc('');
     setFensterDesc('');
     setKellerDesc('');
     setLüftungDesc('');
+    enableSlider(false);
     let construction_year = document.getElementById('Baujahr').value;
     const building_type = document.getElementById('underline_select').value;
     if(construction_year <= 1799){
       construction_year = 1800;
     }
-    
 
     getInfo(construction_year,building_type);
 
@@ -404,9 +456,16 @@ function MainView() {
       const waterheating = linearInterpolation(0, 0, 75, gross_energy_waterheating_values);
       const Endenergieverbrauche = roomheating + waterheating;
       setEnergy(Math.round((Endenergieverbrauche + Number.EPSILON) * 100) / 100);
-      
+      const e_bedarf = Endenergieverbrauche * wGesamt;
+      setEnergiebedarf(Math.round((e_bedarf + Number.EPSILON) * 100) / 100);
+      const e_kosten = e_bedarf * (arbeitpreis/100);
+      setEnergiekosten(Math.round((e_kosten + Number.EPSILON) * 100) / 100);
+      const co2kosten = e_bedarf * (emissionfactor/1000) * (co2preis/1000);
+      setCo2kosten(Math.round((co2kosten + Number.EPSILON) * 100) / 100);
+      const specificity = (emissionfactor/1000) * Endenergieverbrauche
+      setSpezifische(Math.round((specificity + Number.EPSILON) * 100) / 100);
+      enableSlider(true);
     }
-    
   }
 
   const captureImage = (e) => {
@@ -421,17 +480,24 @@ function MainView() {
 
   
   return (
-    <div className='flex flex-col py-1 px-4 shadow-xl min-h-screen min-w-full space-y-5'>
-      {/*<div className='w-full h-30 px-1 py-2 rounded-lg justify-items-center'>
-          <div className='flex space-x-1 w-fit px-3 py-3 rounded-full items-center text-white bg-slate-500 cursor-pointer hover:bg-green-200 hover:text-gray-600 duration-300'>
-            <PlusIcon className='h-5 w-5'/>
-            <p>GEBÄUDEZUSTAND HINZUFÜNGEN</p>
+    <div className='flex flex-col py-1 px-4 shadow-xl min-h-screen min-w-full space-y-5' >
+      <div className='w-full h-50 px-3 pb-3 space-y-2 rounded-xl shadow-xl bg-slate-100 '>
+          <div className='flex items-center justify-end space-x-3 pr-2 pt-1'>
+              <h1 className='text-green-600 text-xl'>powered by</h1>
+              <div className='flex justify-center items-end space-x-2 cursor-pointer'>
+                <a href='https://advisore.eu/' target='_blank'>
+                  <img src={process.env.PUBLIC_URL + '/img/EnergyARK_Full.png'} className=' h-10 w-52'/>
+                </a>
+                <p className=' text-5xl'>|</p>
+                <a href='https://advisore.eu/' target='_blank'>
+                  <img src={process.env.PUBLIC_URL + '/img/brandmark-design (9).png'} className=' h-10 w-52'/>
+                </a>
+              </div>
           </div>
-  </div>*/}
-      <div className='w-full h-50 px-3 py-4 rounded-xl shadow-xl bg-slate-100 '>
-        <div>
-            <h1 className=' pb-10 text-2xl'>GEBÄUDEZUSTAND</h1>
-        </div>
+          <div className=''>
+              <h1 className=' pb-10 text-2xl'>GEBÄUDEDATEN</h1>
+          </div>
+
           <form id='gebäude hinzufüngen' onSubmit={formSubmit}>
               <div className='space-y-2'>
                 <div className='flex space-x-10 '>
@@ -453,13 +519,29 @@ function MainView() {
                         <option value="RHDH">Reihen- und Doppelhaus</option>
                     </select>
                   </div>
+                  <div className='relative'>
+                    <input type='number' defaultValue={10} min={10} onChange={(e)=>setArbeitpreis(e.target.value)} onKeyPress={preventMinus} id='Arbeitpreis' placeholder='Wohnungen gesamt' className='h-10 px-2 bg-slate-100 placeholder-transparent focus:outline-none border-b-2 focus:border-green-600 transition-colors peer' required></input>
+                    <label for='Arbeitspreis' className='absolute cursor-text left-0 -top-4 text-xs text-green-600 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:text-xs peer-focus:text-green-600 peer-focus:-top-4 duration-200'>Arbeitspreis (in ct/kWh)</label>
+                  </div>
+                  <div className='relative'>
+                  <label for="underline" className="sr-only">Underline</label>
+                    <select defaultValue="240" onChange={(e)=>setEmissionfactor(e.target.value)} id="underline" className="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-gray-200 peer" required> 
+                        <option value="0">Wählen Sie einen Emissionsfaktor</option>
+                        <option value="240">Emissionsfaktor Erdgas: 240 g/kWh</option>
+                        <option value="310">Emissionsfaktor Heizöl: 310 g/kWh</option>
+                    </select>
+                  </div>
+                  <div className='relative'>
+                    <input type='number' defaultValue={25} min={25} onChange={(e)=>setCo2preis(e.target.value)} onKeyPress={preventMinus} id='preis' placeholder='Wohnungen gesamt' className='h-10 px-2 bg-slate-100 placeholder-transparent focus:outline-none border-b-2 focus:border-green-600 transition-colors peer' required></input>
+                    <label for='preis' className='absolute cursor-text left-0 -top-4 text-xs text-green-600 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:text-xs peer-focus:text-green-600 peer-focus:-top-4 duration-200'>CO₂-Preis (in €/t)</label>
+                  </div>
                 </div>
-                <div className='flex space-x-5 items-center justify-end'>
+                <div className='flex pt-3 space-x-5 items-center justify-end'>
                     <div>
-                        <button onClick={()=>clearInputs()} className='border-b px-5 py-3 rounded-full bg-slate-500 text-white hover:bg-green-200 hover:text-gray-600 duration-300'>ABBRECHEN</button>
+                        <button onClick={()=>clearInputs()} className='border-b px-5 py-3 rounded-full bg-slate-500 text-white hover:bg-green-200 hover:text-gray-600 duration-300'>ZURÜCKSETZEN</button>
                     </div>
                     <div>
-                        <button onClick={successAlert} className='border-b px-5 py-3 rounded-full bg-slate-500 text-white hover:bg-green-200 hover:text-gray-600 duration-300' >WEITER</button>
+                        <button onClick={successAlert} className='border-b px-5 py-3 rounded-full bg-slate-500 text-white hover:bg-green-200 hover:text-gray-600 duration-300' >DATEN ÜBERNEHMEN</button>
                     </div>
                     {/*<div>
                         <button onClick={captureImage} className='border-b px-5 py-3 rounded-full bg-green-400 text-gray-600 inline-flex items-center space-x-2 hover:text-gray-500 hover:bg-green-300 duration-300'>
@@ -471,9 +553,10 @@ function MainView() {
               </div>
           </form>
       </div>
-      <div className='w-full h-full py-1 items-center rounded-2xl shadow-xl shd bg-slate-100'>
-        <div>
-            <h1 className='px-3 pb-3 text-2xl'>MODERNISIERUNGZUSTAND</h1>
+      <div className='w-full h-fit py-1 items-center rounded-2xl shadow-xl bg-slate-100'>
+        <div ref={ref}/>
+        <div className='pb-5'>
+            <h1 className='px-3 pb-3 text-2xl'>MODERNISIERUNGSZUSTAND</h1>
         </div>
         <div className='flex px-3 w-full space-x-16 py-1'>
             <div className='pr-2.5'>
@@ -481,7 +564,7 @@ function MainView() {
             </div>
             <div className='w-1/4 '>
               <ThemeProvider theme={theme}>
-                <Slider aria-label='Restricted fassade' color='secondary' valueLabelDisplay='auto' value={fassade} step={1} min={0} max={3} marks={marks} onChange={e=>setFassade(e.target.value)} />
+                <Slider disabled={slider===false} aria-label='Restricted fassade' color='secondary' valueLabelDisplay='auto' value={fassade} step={1} min={0} max={3} marks={marks} onChange={e=>setFassade(e.target.value)} />
               </ThemeProvider>
               
             </div> 
@@ -495,7 +578,7 @@ function MainView() {
             </div>
             <div className='w-1/4'>
               <ThemeProvider theme={theme}>
-                <Slider aria-label='Restricted fenster' color='secondary' valueLabelDisplay='auto' value={fenster} step={1} min={0} max={3} marks={marks} onChange={e=>setFenster(e.target.value)} />
+                <Slider disabled={slider===false} aria-label='Restricted fenster' color='secondary' valueLabelDisplay='auto' value={fenster} step={1} min={0} max={3} marks={marks} onChange={e=>setFenster(e.target.value)} />
               </ThemeProvider>
               
             </div>
@@ -509,7 +592,7 @@ function MainView() {
             </div>
             <div className='w-1/4'>
               <ThemeProvider theme={theme}>
-                <Slider aria-label='Restricted dach' color='secondary' valueLabelDisplay='auto' value={dach} step={1} min={0} max={3} marks={marks} onChange={e=>setDach(e.target.value)}   />
+                <Slider disabled={slider===false} aria-label='Restricted dach' color='secondary' valueLabelDisplay='auto' value={dach} step={1} min={0} max={3} marks={marks} onChange={e=>setDach(e.target.value)}   />
               </ThemeProvider>
              
             </div>
@@ -523,7 +606,7 @@ function MainView() {
             </div>
             <div className='w-1/4'>
               <ThemeProvider theme={theme}>
-                <Slider aria-label='Restricted keller' color='secondary' valueLabelDisplay='auto' value={keller} step={1} min={0} max={3} marks={marks} onChange={e=>setKeller(e.target.value)}  />
+                <Slider disabled={slider===false} aria-label='Restricted keller' color='secondary' valueLabelDisplay='auto' value={keller} step={1} min={0} max={3} marks={marks} onChange={e=>setKeller(e.target.value)}  />
               </ThemeProvider>
              
             </div>
@@ -537,7 +620,7 @@ function MainView() {
             </div>
             <div className='w-1/4'>
               <ThemeProvider theme={theme}>
-                <Slider aria-label='Restricted lüftung' color='secondary' valueLabelDisplay='auto' value={lüftung} step={1} min={0} max={1} marks={marks} onChange={e=>setLüftung(e.target.value)}  />
+                <Slider disabled={slider===false} aria-label='Restricted lüftung' color='secondary' valueLabelDisplay='auto' value={lüftung} step={1} min={0} max={1} marks={marks} onChange={e=>setLüftung(e.target.value)}  />
               </ThemeProvider>
              
             </div>
@@ -545,10 +628,12 @@ function MainView() {
               <p className='text-lg font-semibold'>{lüftungDesc}</p>
             </div>
         </div>
-        <div className='flex  w-max items-center space-x-10'>
-          <div className='flex px-3 w-full space-x-10 py-5'>
+        <hr class="h-px my-2 mb-8 bg-gray-200 border-0 dark:bg-gray-300"></hr>
+        <div className='relative flex  max-w-min space-x-5 items-center'>
+          
+          <div className='flex px-3 space-x-10'>
               <div>
-                <h2 className='pr-2.5 text-lg font-semibold'>Modernisierungsgrad in %</h2>
+                <h2 className='pr-2.5 text-lg font-semibold'>Modernisierungsgrad</h2>
               </div>
               <div className='w-full'>
                 <ReactSpeedometer
@@ -560,10 +645,12 @@ function MainView() {
                   segmentColors={['#ff0000','#ff3300', '#ff6600', '#ff9900', '#ffcc00','#ffff00', '#d4ed13','#baed13', '#84ed13','#37ed13', '#16c910' ]}
                   segments={10}
                   textColor='black'
+                  currentValueText={`Modernisierungsgrad in % = ${new Intl.NumberFormat('de-DE', 
+                  { style: 'decimal' }).format(gesamt)} %`}
                 />
               </div>
           </div>
-          <div className='flex w-full space-x-40 py-1'>
+          <div className='flex space-x-40'>
               <div className='w-10'>
                 <h2 className='pr-2.5 text-lg font-semibold'>Energieeffizienzklasse</h2>
               </div>
@@ -617,11 +704,12 @@ function MainView() {
                     },
 
                   ]}
-                  currentValueText={'Erwaterter Endenergieverbrauch = ${value} kWh/m²a'}
+                  currentValueText={`Erwarteter Endenergieverbrauch = ${new Intl.NumberFormat('de-DE').format(energy)} kWh/m²a`}
                   
                 />
               </div>
-              <div className='relative 
+              <div className='
+                              relative 
                               before:content-[attr(data-tip)]
                               before:absolute
                               before:px-3 beore:py-2
@@ -646,23 +734,41 @@ function MainView() {
                               
                               hover:before:opacity-100 hover:after:opacity-100'
                             
-                              data-tip='Energy Rating:
-                                        (0 - 30 : A+),
-                                        (31 - 50 : A), 
-                                        (51 - 75 : B), 
-                                        (76 - 100 : C),
-                                        (101 - 130 : D), 
-                                        (131 - 160 : E),
-                                        (161 - 200 : F),
-                                        (201 - 250 : G),
-                                        (251 - 300+ : H)'
+                              data-tip='Energieeffizienzklasse:
+                                        (0 - 30 kWh/m²a : A+), 
+                                        (31 - 50  kWh/m²a : A), 
+                                        (51 - 75 kWh/m²a : B), 
+                                        (76 - 100 kWh/m²a : C),
+                                        (101 - 130 kWh/m²a : D), 
+                                        (131 - 160 kWh/m²a : E),
+                                        (161 - 200 kWh/m²a : F),
+                                        (201 - 250 kWh/m²a : G),
+                                        (251 - 300+ kWh/m²a : H)'
                             >
                   <InformationCircleIcon className='h-10 w-10 cursor-pointer'/>
               </div>
-              
+          </div>
+          <div className='absolute bottom-14 -left-2 flex-col w-1/2 items-center space-y-2'>
+              <div className='flex items-center'>
+                <p className='pr-3.5 text-lg font-semibold'>Energiebedarf ohne Wirkungsgrad Wärmeversorgungsanlage = </p>
+                <p className='pt-[0.5] font-semibold'>{new Intl.NumberFormat('de-DE').format(energiebedarf)} kWh/a</p>
+              </div>
+              <div className='flex items-center'>
+                <p className='pr-2.5 text-lg font-semibold'>Erwartete Energiekosten = </p>
+                <p className='pt-[0.5] font-semibold'>{new Intl.NumberFormat('de-DE').format(energiekosten)} € pro Jahr</p>
+              </div>
+              <div className='flex items-center'>
+                <p className='pr-2.5 text-lg font-semibold'>Erwartete  CO₂-Kosten = </p>
+                <p className='pt-[0.5] font-semibold'>{new Intl.NumberFormat('de-DE').format(co2kosten)} € pro Jahr</p>
+              </div>
+              <div className='flex items-center'>
+                <p className='pr-2.5 text-lg font-semibold'>Erwartete spezifische CO₂-Emissionen = </p>
+                <p className='pt-[0.5] font-semibold'>{new Intl.NumberFormat('de-DE').format(spezifische)} kg/m²a</p>
+              </div>
           </div>
         </div>
       </div>
+      <div/>
     </div>
   )
                 
