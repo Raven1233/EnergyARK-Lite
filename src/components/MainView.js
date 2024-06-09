@@ -1,3 +1,4 @@
+
 import {React, useState, useRef, useEffect} from 'react'
 import { PlusIcon, InboxArrowDownIcon} from '@heroicons/react/24/solid'
 import { InformationCircleIcon} from '@heroicons/react/24/outline'
@@ -57,6 +58,11 @@ function MainView() {
   const [co2kosten, setCo2kosten] = useState(0); // CO2-Kosten
   const [spezifische, setSpezifische] = useState(0); // Spezifische Energieverbrauch
   const [slider, enableSlider] = useState(false); // Slider state
+  const [dachLimit, setDachLimit] = useState(3); // Dach limit
+  const [fassadeLimit, setFassadeLimit] = useState(3); // Fassade limit
+  const [fensterLimit, setFensterLimit] = useState(3); // Fenster limit
+  const [kellerLimit, setKellerLimit] = useState(3); // Keller limit
+  const [lüftungLimit, setLüftungLimit] = useState(1); // Lüftung limit
   const myMessage = useRef(null);
   const [K, setK] = useState(0);
   const ref = useRef(null);
@@ -77,6 +83,11 @@ function MainView() {
       setKellerDesc(keller_value);
       const lüftung_value = destructuringDesc(ventilation, lüftung);
       setLüftungDesc(lüftung_value);
+      setDachLimit(roof.length - 1);
+      setFassadeLimit(hull.length - 1);
+      setFensterLimit(windows.length - 1);
+      setKellerLimit(cellarroof.length - 1);
+      setLüftungLimit(ventilation.length - 1);
       const cell_roof_value = destructuring(cellarroof, keller);
       const hull_value = destructuring(hull, fassade);
       const roof_value = destructuring(roof, dach);
@@ -358,6 +369,11 @@ function MainView() {
     setEnergiekosten(0);
     setCo2kosten(0);
     setSpezifische(0);
+    setDachLimit(3);
+    setFassadeLimit(3);
+    setFensterLimit(3);
+    setKellerLimit(3);
+    setLüftungLimit(1);
     setData(null);
     enableSlider(false);
   }
@@ -433,6 +449,11 @@ function MainView() {
     setFensterDesc('');
     setKellerDesc('');
     setLüftungDesc('');
+    setDachLimit(3);
+    setFassadeLimit(3);
+    setFensterLimit(3);
+    setKellerLimit(3);
+    setLüftungLimit(1);
     enableSlider(false);
     let construction_year = document.getElementById('Baujahr').value;
     const building_type = document.getElementById('underline_select').value;
@@ -452,6 +473,11 @@ function MainView() {
       setFensterDesc(windows[fenster]?.description);
       setKellerDesc(cellarroof[keller]?.description);
       setLüftungDesc(ventilation[lüftung]?.description);
+      setDachLimit(roof.length - 1);
+      setFassadeLimit(hull.length - 1);
+      setFensterLimit(windows.length - 1);
+      setKellerLimit(cellarroof.length - 1);
+      setLüftungLimit(ventilation.length - 1);
       const roomheating = linearInterpolation(0, 0, 75, gross_energy_roomheating_values);
       const waterheating = linearInterpolation(0, 0, 75, gross_energy_waterheating_values);
       const Endenergieverbrauche = roomheating + waterheating;
@@ -480,17 +506,17 @@ function MainView() {
 
   
   return (
-    <div className='flex flex-col py-1 px-4 shadow-xl min-h-screen min-w-full space-y-5' >
-      <div className='w-full h-50 px-3 pb-3 space-y-2 rounded-xl shadow-xl bg-slate-100 '>
-          <div className='flex items-center justify-end space-x-3 pr-2 pt-1'>
+    <div className='flex flex-col py-1 px-4 min-h-screen bg-slate-100 min-w-full space-y-5' >
+      <div className='w-full h-50 px-3 pb-3 space-y-2 rounded-xl  '>
+          <div className='flex items-center justify-end space-x-3 pr-7 pt-1'>
               <h1 className='text-green-600 text-xl'>powered by</h1>
               <div className='flex justify-center items-end space-x-2 cursor-pointer'>
                 <a href='https://advisore.eu/' target='_blank'>
-                  <img src={process.env.PUBLIC_URL + '/img/EnergyARK_Full.png'} className=' h-10 w-52'/>
+                  <img src={require("../img/EnergyARK_Full.png")} alt='logo' className=' h-10 w-52'/>
                 </a>
                 <p className=' text-5xl'>|</p>
                 <a href='https://advisore.eu/' target='_blank'>
-                  <img src={process.env.PUBLIC_URL + '/img/brandmark-design (9).png'} className=' h-10 w-52'/>
+                  <img src={require("../img/brandmark-design.png")} alt='logo' className=' h-10 w-52'/>
                 </a>
               </div>
           </div>
@@ -553,7 +579,7 @@ function MainView() {
               </div>
           </form>
       </div>
-      <div className='w-full h-fit py-1 items-center rounded-2xl shadow-xl bg-slate-100'>
+      <div className='w-full h-fit py-1 items-center rounded-2xl '>
         <div ref={ref}/>
         <div className='pb-5'>
             <h1 className='px-3 pb-3 text-2xl'>MODERNISIERUNGSZUSTAND</h1>
@@ -562,13 +588,13 @@ function MainView() {
             <div className='pr-2.5'>
               <h2 className='text-lg font-semibold'>Fassade</h2>
             </div>
-            <div className='w-1/4 '>
+            <div className=' w-1/3 pl-1 pr-1'>
               <ThemeProvider theme={theme}>
-                <Slider disabled={slider===false} aria-label='Restricted fassade' color='secondary' valueLabelDisplay='auto' value={fassade} step={1} min={0} max={3} marks={marks} onChange={e=>setFassade(e.target.value)} />
+                <Slider disabled={slider===false} aria-label='Restricted fassade' color='secondary' valueLabelDisplay='auto' value={fassade} step={1} min={0} max={fassadeLimit} marks={marks} onChange={e=>setFassade(e.target.value)} />
               </ThemeProvider>
               
             </div> 
-            <div className='pl-10'>
+            <div className='pl-11 '>
               <p className='text-lg font-semibold'>{fassadeDesc}</p>
             </div>
         </div>
@@ -576,13 +602,13 @@ function MainView() {
             <div className='pr-3.5'>
               <h2 className=' text-lg font-semibold'>Fenster</h2>
             </div>
-            <div className='w-1/4'>
+            <div className='w-1/3 pl-1 pr-1'>
               <ThemeProvider theme={theme}>
-                <Slider disabled={slider===false} aria-label='Restricted fenster' color='secondary' valueLabelDisplay='auto' value={fenster} step={1} min={0} max={3} marks={marks} onChange={e=>setFenster(e.target.value)} />
+                <Slider disabled={slider===false} aria-label='Restricted fenster' color='secondary' valueLabelDisplay='auto' value={fenster} step={1} min={0} max={fensterLimit} marks={marks} onChange={e=>setFenster(e.target.value)} />
               </ThemeProvider>
               
             </div>
-            <div className='pl-10'>
+            <div className='pl-11'>
               <p className='text-lg font-semibold'>{fensterDesc}</p>
             </div>
         </div>
@@ -590,13 +616,13 @@ function MainView() {
             <div>
               <h2 className=' text-lg font-semibold'>Dach</h2>
             </div>
-            <div className='w-1/4'>
+            <div className='w-1/3 pl-2'>
               <ThemeProvider theme={theme}>
-                <Slider disabled={slider===false} aria-label='Restricted dach' color='secondary' valueLabelDisplay='auto' value={dach} step={1} min={0} max={3} marks={marks} onChange={e=>setDach(e.target.value)}   />
+                <Slider disabled={slider===false} aria-label='Restricted dach' color='secondary' valueLabelDisplay='auto' value={dach} step={1} min={0} max={dachLimit} marks={marks} onChange={e=>setDach(e.target.value)}   />
               </ThemeProvider>
              
             </div>
-            <div className='pl-2'>
+            <div className='pl-4'>
               <p className='text-lg font-semibold'>{dachDesc}</p>
             </div>
         </div>
@@ -604,9 +630,9 @@ function MainView() {
             <div>
               <h2 className=' text-lg font-semibold'>Keller(-decke)</h2>
             </div>
-            <div className='w-1/4'>
+            <div className='w-1/3 pr-2'>
               <ThemeProvider theme={theme}>
-                <Slider disabled={slider===false} aria-label='Restricted keller' color='secondary' valueLabelDisplay='auto' value={keller} step={1} min={0} max={3} marks={marks} onChange={e=>setKeller(e.target.value)}  />
+                <Slider disabled={slider===false} aria-label='Restricted keller' color='secondary' valueLabelDisplay='auto' value={keller} step={1} min={0} max={kellerLimit} marks={marks} onChange={e=>setKeller(e.target.value)}  />
               </ThemeProvider>
              
             </div>
@@ -618,13 +644,13 @@ function MainView() {
             <div className='pr-2'>
               <h2 className=' text-lg font-semibold'>Lüftung</h2>
             </div>
-            <div className='w-1/4'>
+            <div className='w-1/3 pl-1'>
               <ThemeProvider theme={theme}>
-                <Slider disabled={slider===false} aria-label='Restricted lüftung' color='secondary' valueLabelDisplay='auto' value={lüftung} step={1} min={0} max={1} marks={marks} onChange={e=>setLüftung(e.target.value)}  />
+                <Slider disabled={slider===false} aria-label='Restricted lüftung' color='secondary' valueLabelDisplay='auto' value={lüftung} step={1} min={0} max={lüftungLimit} marks={marks} onChange={e=>setLüftung(e.target.value)}  />
               </ThemeProvider>
              
             </div>
-            <div className='pl-10'>
+            <div className='pl-12'>
               <p className='text-lg font-semibold'>{lüftungDesc}</p>
             </div>
         </div>
