@@ -1,30 +1,40 @@
 <!doctype html>
 <html>
-<head>
+
+<head style="position: absolute;">
     <?= $template->meta() ?>
     <?= $template->styles() ?>
     <?= $template->scripts() ?>
-
     <title>Energiebedarfsrechner</title>
-    
+    <link href="/dist/main.fbd11605.css" type="text/css" rel="stylesheet"/>
+    <div style="position: relative;
+            padding-top: 50px;
+            padding-left: 224px;
+            z-index: 1000;">
+        <a title="Zur Startseite der RPTU" href="https://rptu.de/">
+            <img src="/images/RPTU_logo.svg"  height="42" width="132">
+        </a>
+    </div>
+   
 </head>
 <body <?= $template->body_attributes() ?>>
-
 <?= $template->content_before() ?>
 
-<div class="webdev-project">
+
+<div class="w-100 page-main-content rptu">
     <!-- own content here -->
-    <div class="container">
-        <br/><br/><br/><br/>
+    <div class="container-fluid">
+        <br/><br/>
         <div id="javascriptExample"></div>
-        <link rel="stylesheet" href="./build/static/css/main.a838bc2a.css"/>
-        <script src="./build/static/js/787.ec704a7a.chunk.js"></script>
-        <script src="./build/static/js/main.938a0739.js"></script>
-        <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+        <script src="/dist/787.ec704a7a.chunk.js" crossorigin></script>
+        <script src="/dist/main.142de51c.js" crossorigin></script>
+        <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
     </div>
 </div>
 
 <?= $template->content_after() ?>
 
 </body>
+
+
 </html>

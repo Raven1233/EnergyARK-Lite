@@ -13,6 +13,8 @@ import { useAxios } from './useAxios';
 import { render } from '@testing-library/react';
 import html2canvas from 'html2canvas';
 import numeral from 'numeral';
+import Accordion from './Accordion';
+import { useOnKeyPress } from './useOnKeyPress';
 /* const res = fetch(url, {
       method: 'POST',
       headers: {
@@ -503,20 +505,19 @@ function MainView() {
       a.click();
     })
   }
-
   
   return (
-    <div className='flex flex-col py-1 px-4 min-h-screen bg-slate-100 min-w-full space-y-5' >
+    <div className='flex flex-col py-1 px-4 min-h-screen min-w-full space-y-5' >
       <div className='w-full h-50 px-3 pb-3 space-y-2 rounded-xl  '>
           <div className='flex items-center justify-end space-x-3 pr-7 pt-1'>
               <h1 className='text-green-600 text-xl'>powered by</h1>
               <div className='flex justify-center items-end space-x-2 cursor-pointer'>
                 <a href='https://advisore.eu/' target='_blank'>
-                  <img src={require("../img/EnergyARK_Full.png")} alt='logo' className=' h-10 w-52'/>
+                  <img src={require("../img/EnergyARK_Full.png")} alt='logo' className=' h-10 w-56'/>
                 </a>
                 <p className=' text-5xl'>|</p>
                 <a href='https://advisore.eu/' target='_blank'>
-                  <img src={require("../img/brandmark-design.png")} alt='logo' className=' h-10 w-52'/>
+                  <img src={require("../img/brandmark-design.png")} alt='logo' className=' h-10 w-56'/>
                 </a>
               </div>
           </div>
@@ -526,13 +527,13 @@ function MainView() {
 
           <form id='gebäude hinzufüngen' onSubmit={formSubmit}>
               <div className='space-y-2'>
-                <div className='flex space-x-10 '>
+                <div className='flex space-x-10'>
                   <div className='relative'>
-                    <input type='number' min={0} onChange={(e)=>setWgesamt(e.target.value)} onKeyPress={preventMinus} id='Wohnfläche gesamt' placeholder="Wohnfläche gesamt (in m²)" className='h-10 px-2 bg-slate-100 placeholder-transparent focus:outline-none border-b-2 focus:border-green-600 transition-colors peer' required></input>
-                    <label for='Wohnfläche gesamt' id='Wohnfläche gesamt-label' className='absolute cursor-text left-0 -top-4 text-xs text-green-600 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:text-xs peer-focus:text-green-600 peer-focus:-top-4 duration-200'>Wohnfläche gesamt (in m²)</label>
+                    <input type='number' min={0} onChange={(e)=>setWgesamt(e.target.value)} onKeyPress={preventMinus} id='Wohnfläche gesamt' placeholder="Wohnfläche gesamt (in m²)" className='h-10 px-2 placeholder-transparent focus:outline-none border-b-2 focus:border-green-600 transition-colors peer' required></input>
+                    <label for='Wohnfläche gesamt' id='Wohnfläche gesamt-label' className=' absolute cursor-text left-0 -top-4 text-xs text-green-600 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:text-xs peer-focus:text-green-600 peer-focus:-top-4 duration-200'>Wohnfläche gesamt (in m²)</label>
                   </div>
                   <div className='relative'>
-                    <input type='number' min={0} onChange={(e)=>setJahr(e.target.value)} onKeyPress={preventMinus} id='Baujahr' placeholder='Wohnungen gesamt' className='h-10 px-2 bg-slate-100 placeholder-transparent focus:outline-none border-b-2 focus:border-green-600 transition-colors peer' required></input>
+                    <input type='number' min={0} onChange={(e)=>setJahr(e.target.value)} onKeyPress={preventMinus} id='Baujahr' placeholder='Wohnungen gesamt' className='h-10 px-2 placeholder-transparent focus:outline-none border-b-2 focus:border-green-600 transition-colors peer' required></input>
                     <label for='Baujahr' className='absolute cursor-text left-0 -top-4 text-xs text-green-600 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:text-xs peer-focus:text-green-600 peer-focus:-top-4 duration-200'>Baujahr</label>
                   </div>
                   <div className="relative w-72">
@@ -546,7 +547,7 @@ function MainView() {
                     </select>
                   </div>
                   <div className='relative'>
-                    <input type='number' defaultValue={10} min={10} onChange={(e)=>setArbeitpreis(e.target.value)} onKeyPress={preventMinus} id='Arbeitpreis' placeholder='Wohnungen gesamt' className='h-10 px-2 bg-slate-100 placeholder-transparent focus:outline-none border-b-2 focus:border-green-600 transition-colors peer' required></input>
+                    <input type='number' defaultValue={10} min={1} onChange={(e)=>setArbeitpreis(e.target.value)} onKeyPress={preventMinus} id='Arbeitpreis' placeholder='Wohnungen gesamt' className='h-10 px-2 placeholder-transparent focus:outline-none border-b-2 focus:border-green-600 transition-colors peer' required></input>
                     <label for='Arbeitspreis' className='absolute cursor-text left-0 -top-4 text-xs text-green-600 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:text-xs peer-focus:text-green-600 peer-focus:-top-4 duration-200'>Arbeitspreis (in ct/kWh)</label>
                   </div>
                   <div className='relative'>
@@ -558,7 +559,7 @@ function MainView() {
                     </select>
                   </div>
                   <div className='relative'>
-                    <input type='number' defaultValue={25} min={25} onChange={(e)=>setCo2preis(e.target.value)} onKeyPress={preventMinus} id='preis' placeholder='Wohnungen gesamt' className='h-10 px-2 bg-slate-100 placeholder-transparent focus:outline-none border-b-2 focus:border-green-600 transition-colors peer' required></input>
+                    <input type='number' defaultValue={25} min={1} onChange={(e)=>setCo2preis(e.target.value)} onKeyPress={preventMinus} id='preis' placeholder='Wohnungen gesamt' className='h-10 px-2 placeholder-transparent focus:outline-none border-b-2 focus:border-green-600 transition-colors peer' required></input>
                     <label for='preis' className='absolute cursor-text left-0 -top-4 text-xs text-green-600 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:text-xs peer-focus:text-green-600 peer-focus:-top-4 duration-200'>CO₂-Preis (in €/t)</label>
                   </div>
                 </div>
@@ -654,10 +655,10 @@ function MainView() {
               <p className='text-lg font-semibold'>{lüftungDesc}</p>
             </div>
         </div>
-        <hr class="h-px my-2 mb-8 bg-gray-200 border-0 dark:bg-gray-300"></hr>
-        <div className='relative flex  max-w-min space-x-5 items-center'>
+        <hr class="h-px my-2 mb-8 bg-gray-200 border-0 dark:bg-gray-300 "></hr>
+        <div className='relative flex pt-5 max-w-min space-x-5 items-center'>
           
-          <div className='flex px-3 space-x-10'>
+          <div className='flex px-3 space-x-2'>
               <div>
                 <h2 className='pr-2.5 text-lg font-semibold'>Modernisierungsgrad</h2>
               </div>
@@ -676,7 +677,7 @@ function MainView() {
                 />
               </div>
           </div>
-          <div className='flex space-x-40'>
+          <div className='flex space-x-28'>
               <div className='w-10'>
                 <h2 className='pr-2.5 text-lg font-semibold'>Energieeffizienzklasse</h2>
               </div>
@@ -774,8 +775,8 @@ function MainView() {
                   <InformationCircleIcon className='h-10 w-10 cursor-pointer'/>
               </div>
           </div>
-          <div className='absolute bottom-14 -left-2 flex-col w-1/2 items-center space-y-2'>
-              <div className='flex items-center'>
+          <div className=' sm:bottom-2 sm:w-max absolute bottom-14 -left-2 flex-col w-1/2 items-center space-y-2'>
+              <div className=' flex items-center'>
                 <p className='pr-3.5 text-lg font-semibold'>Energiebedarf ohne Wirkungsgrad Wärmeversorgungsanlage = </p>
                 <p className='pt-[0.5] font-semibold'>{new Intl.NumberFormat('de-DE').format(energiebedarf)} kWh/a</p>
               </div>
@@ -794,7 +795,43 @@ function MainView() {
           </div>
         </div>
       </div>
-      <div/>
+
+      <div className='pt-5 flex w-full justify-center'>           
+        <div className='pt-2 w-5/12 shadow-2xl bg-slate-200 rounded-lg'>
+          <div className='flex mt-4 justify-center items-center '>
+            <h1 className='text-2xl font-extrabold underline'>HÄUFIG GESTELLTE FRAGEN (FAQ)</h1>
+          </div>
+          <div className='mr-2 ml-2 p-10 mb-4 justify-center items-center'>
+            <Accordion 
+              question="Was kann mit dem Tool gemacht werden?" 
+              answer="Mit dem Tool können Sie schnell und einfach realistische Zahlen für den Verbrauch, Emissionen und die Wärmekosten in einem Wohngebäude erzeugen."
+              count={1}
+            />
+            <Accordion 
+              question="Wie gehe ich hierbei vor?" 
+              answer="Geben Sie die Wohnfläche, das ungefähre Baujahr und den Gebäudetyp an. Über die Einstellung des Arbeitspreises und die Auswahl des Emissionsfaktors/Energieträgers werden Ihnen gleichzeitig die erwarteten Kosten angezeigt.
+              Nachdem Sie &quot;Daten übernehmen&quot; geklickt haben, werden Ihnen der wahrscheinliche Zustand des Gebäudes ohne nennenswerte nachträgliche energetische Modernisierung angezeigt.
+              Ist eine Komponente bereits besser, schieben Sie den entsprechenden Regler nach rechts zu einer höheren Stufe die ca. dem derzeitigen Zustand entspricht. Die Modernisierungsstufen orientieren sich an den Stufen in Tabula
+              ( https://webtool.building-typology.eu/#bm )."
+              count={2}
+            />
+            <Accordion 
+              question="Wie interpretier ich die Zahlen richtig?" 
+              answer="Die Zahlen entsprechen realistischen und real zu beobachtenden Verbrauchswerten.
+              Deshalb wird bereits ein sparsames Verbrauchsverhalten bei energetisch schlechten (Preboundeffekt) 
+              und ein erhöhter Verbrauch bei energetisch hochwertigen Gebäuden (Reboundeffekt) mit einberechnet.
+              Der Energieverbrauch umfasst Wärme für Raumwärme und Warmwasser."
+              count={3}
+            />
+          </div>
+        </div>
+      </div>
+      <div>
+        {' '}{' '}
+      </div>
+      <div>
+        {' '}{' '}
+      </div>
     </div>
   )
                 

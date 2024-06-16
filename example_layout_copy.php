@@ -4,7 +4,7 @@
     <?= $template->meta() ?>
     <?= $template->styles() ?>
     <?= $template->scripts() ?>
-
+    
     <title>Template Tool</title>
 
 </head>
