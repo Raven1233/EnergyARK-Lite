@@ -32,7 +32,7 @@ import { useOnKeyPress } from './useOnKeyPress';
     .catch(error => {
       console.log(error);
     })*/ 
-function MainView() {
+function Homepage() {
 
   const [fassade, setFassade] = useState(0); // State of Fassade value
   const [fenster, setFenster] = useState(0); // State of Fenster value
@@ -546,7 +546,8 @@ function MainView() {
 
           <form className='w-full' id='gebäude hinzufüngen' onSubmit={formSubmit}>
               <div className='space-y-2'>
-                <div className='w-full flex space-x-12'>
+                <div className='w-full flex-col space-x-12 space-y-14'>
+                  <div className='flex space-x-24 pl-12'>
                   <div className='relative'>
                     <input type='number' min={0} onChange={(e)=>setWgesamt(e.target.value)} onKeyPress={preventMinus} id='Wohnfläche gesamt' placeholder="Wohnfläche gesamt (in m²)" className='h-10 px-2 placeholder-transparent bg-neutral-100 focus:outline-none border-b-2 focus:border-green-600 transition-colors peer' required></input>
                     <label for='Wohnfläche gesamt' id='Wohnfläche gesamt-label' className=' absolute cursor-text left-0 -top-4 text-xs text-green-600 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:text-xs peer-focus:text-green-600 peer-focus:-top-4 duration-200'>Wohnfläche gesamt (in m²)</label>
@@ -556,7 +557,7 @@ function MainView() {
                     <label for='Baujahr' className='absolute cursor-text left-0 -top-4 text-xs text-green-600 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:text-xs peer-focus:text-green-600 peer-focus:-top-4 duration-200'>Baujahr</label>
                   </div>
                   <div className="relative w-72">
-                    <select defaultValue="type" onChange={(e)=>setGType(e.target.value)} id="underline_select" className="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-gray-200 peer" required> 
+                    <select defaultValue="type" onChange={(e)=>setGType(e.target.value)} id="underline_select" className="block cursor-pointer py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-gray-200 peer" required> 
                         <option value="type">Wählen Sie einen Gebäudetyp</option>
                         <option value="EFH">Einfamilienhaus</option>
                         <option value="KLMFH">Kleines Mehrfamilienhaus</option>
@@ -565,12 +566,14 @@ function MainView() {
                     </select>
                     <label for="underline_select" className="sr-only">Underline select</label>
                   </div>
+                  </div>
+                  <div className='flex space-x-24 justify-start'>
                   <div className='relative'>
                     <input type='number' defaultValue={10} min={1} onChange={(e)=>setArbeitpreis(e.target.value)} onKeyPress={preventMinus} id='Arbeitpreis' placeholder='Wohnungen gesamt' className='h-10 px-2 bg-neutral-100 placeholder-transparent focus:outline-none border-b-2 focus:border-green-600 transition-colors peer' required></input>
                     <label for='Arbeitspreis' className='absolute cursor-text left-0 -top-4 text-xs text-green-600 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:text-xs peer-focus:text-green-600 peer-focus:-top-4 duration-200'>Arbeitspreis (in ct/kWh)</label>
                   </div>
                   <div className='relative w-72'>
-                    <select defaultValue="181.39" onChange={(e)=>setEmissionfactor(e.target.value)} id="underline" className="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-gray-200 peer" required> 
+                    <select defaultValue="181.39" onChange={(e)=>setEmissionfactor(e.target.value)} id="underline" className="block cursor-pointer py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-gray-200 peer" required> 
                         <option value="0">Wählen Sie einen Emissionsfaktor</option>
                         <option value="181.39">Emissionsfaktor Erdgas_Hs: 181,39 g/kWh</option>
                         <option value="200.88">Emissionsfaktor Erdgas_Hi: 200,88 g/kWh</option>
@@ -584,6 +587,7 @@ function MainView() {
                   <div className='relative'>
                     <input type='number' defaultValue={25} min={1} onChange={(e)=>setCo2preis(e.target.value)} onKeyPress={preventMinus} id='preis' placeholder='Wohnungen gesamt' className='h-10 px-2 bg-neutral-100 placeholder-transparent focus:outline-none border-b-2 focus:border-green-600 transition-colors peer' required></input>
                     <label for='preis' className='absolute cursor-text left-0 -top-4 text-xs text-green-600 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:text-xs peer-focus:text-green-600 peer-focus:-top-4 duration-200'>CO₂-Preis (in €/t)</label>
+                  </div>
                   </div>
                 </div>
                 <div className='flex pt-3 space-x-5 items-center justify-end'>
@@ -820,7 +824,7 @@ function MainView() {
       </div>
 
       <div className='pt-5 flex w-full justify-center'>           
-        <div className='pt-2 w-1/2 shadow-2xl bg-slate-200 rounded-lg'>
+        <div className='pt-2 w-3/5 shadow-2xl bg-slate-200 rounded-lg'>
           <div className='flex mt-4 justify-center items-center '>
             <h1 className='text-2xl font-extrabold underline'>HÄUFIG GESTELLTE FRAGEN (FAQ)</h1>
           </div>
@@ -872,4 +876,4 @@ function MainView() {
                 
 }
 
-export default MainView
+export default Homepage

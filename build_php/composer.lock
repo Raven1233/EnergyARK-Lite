@@ -1,0 +1,48 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "527e4d5019168d078019490342fc4318",
+    "packages": [
+        {
+            "name": "rhrk-webdev/curl",
+            "version": "2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab.rhrk.uni-kl.de/rhrk-webdev/services/curl.git",
+                "reference": "20477ca39d9da832bdcdefe0bbe99ced1d6b12e5"
+            },
+            "require": {
+                "php": "^7.3 || ^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "RHRK\\CurlBuilder\\": "src"
+                }
+            },
+            "authors": [
+                {
+                    "name": "rhrk-webdev",
+                    "email": "webdev@rhrk.uni-kl.de"
+                }
+            ],
+            "description": "CurlBuilder",
+            "homepage": "https://gitlab.rhrk.uni-kl.de/rhrk-webdev/services/curl",
+            "time": "2023-06-28T10:52:40+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=7.3"
+    },
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
+}

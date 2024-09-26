@@ -1,0 +1,30 @@
+{
+    "name": "rhrk-webdev/template-tools",
+    "description": "RHRK Template Tool für PHP-Projekte im Corporate Design der RPTU",
+    "homepage": "https://gitlab.rhrk.uni-kl.de/rhrk-webdev/template-tools",
+    "authors": [
+        {
+            "name": "Christian Klamm",
+            "email": "cklamm@rhrk.uni-kl.de"
+        },
+        {
+            "name": "rhrk-webdev",
+            "email": "webdev@rhrk.uni-kl.de"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://satis.rhrk.uni-kl.de"
+        }
+    ],
+    "require": {
+        "php": ">=7.3",
+        "rhrk-webdev/curl": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "RHRK\\TemplateTool\\": "src"
+        }
+    }
+}
